@@ -1,0 +1,11 @@
+# have git ignore these filses
+.csv
+.log
+.pyc
+
+# ignore all files in the venv directory
+evs_venv/*
+data/*
+logs/*
+__pycache__/*
+.vscode/*
