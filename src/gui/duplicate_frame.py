@@ -105,9 +105,7 @@ class DuplicateWorker(QThread):
             external_dup_df, match_info = self.detector.detect_duplicates(
                 internal_dup_df,
                 self.entity_columns,
-                progress_callback=lambda p: self.progress_updated.emit(
-                    50 + int(p * 0.5)
-                ),
+                report_progress=lambda p: self.progress_updated.emit(50 + int(p * 0.5)),
             )
 
             # Emit results for external duplicates

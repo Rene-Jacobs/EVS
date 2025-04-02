@@ -4,6 +4,7 @@
 .pyc
 
 # ignore all files in the venv directory
+reports/*
 evs_venv/*
 data/*
 logs/*
