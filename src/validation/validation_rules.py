@@ -163,8 +163,13 @@ class ValidationRules:
         original_name = entity_name
         current_name = entity_name
 
-        # Rule 1: Check if it's using acronyms (hard to implement automatically)
-        # This would require a database of known acronyms and their expansions
+        # Rule 1: Check if it appears to be an acronym
+        if self._is_likely_acronym(current_name):
+            violations.append(
+                "Entity appears to be an acronym - full name should be spelled out"
+            )
+            # Don't suggest a correction for acronyms since we don't know the expanded form
+            # Just keep track of the violation
 
         # Rule 2: Replace ampersands
         if "&" in current_name:
@@ -203,13 +208,22 @@ class ValidationRules:
             violations.append(govt_entity_issue)
             current_name = self._format_government_entity(current_name)
 
-        # Rule 9: Convert to title case
-        if current_name != current_name.title():
-            violations.append("Entity name should be in title case")
-            current_name = current_name.title()
+        # Rule 9: Apply proper title case with exceptions for small words
+        if not self._check_title_case(current_name):
+            violations.append(
+                "Entity name should use proper title case (small words like 'and', 'of', 'to' should not be capitalized in the middle)"
+            )
+            current_name = self._proper_title_case(current_name)
 
         # If no changes were made, clear the violations list
-        if original_name == current_name:
+        # If only violation is that it's an acronym, clear the suggestion
+        if violations == [
+            "Entity appears to be an acronym - full name should be spelled out"
+        ]:
+            return "", violations
+
+        # If no changes were made, clear the violations list (except for acronym detection)
+        if original_name == current_name and not self._is_likely_acronym(original_name):
             violations = []
 
         return current_name, violations
@@ -421,52 +435,6 @@ class ValidationRules:
 
         return False
 
-    def apply_all_rules(self, entity_name):
-        """
-        Apply all validation rules to an entity name.
-
-        Args:
-            entity_name (str): The entity name to validate.
-
-        Returns:
-            tuple: (validated_name, list of violations)
-        """
-        if not entity_name or not isinstance(entity_name, str):
-            return "", ["Empty or invalid entity name"]
-
-        violations = []
-
-        # Track the original and current state for reporting
-        original_name = entity_name
-        current_name = entity_name
-
-        # Rule 0: Check if it appears to be an acronym
-        if self._is_likely_acronym(current_name):
-            violations.append(
-                "Entity appears to be an acronym - full name should be spelled out"
-            )
-            # Don't suggest a correction for acronyms since we don't know the expanded form
-            # Just keep track of the violation
-
-        # Rule 1: Replace ampersands
-        if "&" in current_name:
-            violations.append("Ampersand used instead of 'and'")
-            current_name = self._replace_ampersands(current_name)
-
-        # [Other existing rules remain unchanged]
-
-        # If only violation is that it's an acronym, clear the suggestion
-        if violations == [
-            "Entity appears to be an acronym - full name should be spelled out"
-        ]:
-            return "", violations
-
-        # If no changes were made, clear the violations list (except for acronym detection)
-        if original_name == current_name and not self._is_likely_acronym(original_name):
-            violations = []
-
-        return current_name, violations
-
     def set_fuzzy_threshold(self, threshold):
         """
         Set the fuzzy matching threshold.
@@ -484,3 +452,49 @@ class ValidationRules:
     def get_fuzzy_threshold(self):
         """Get the current fuzzy matching threshold."""
         return self.fuzzy_threshold
+
+    def _proper_title_case(self, name):
+        """
+        Apply proper title case with exceptions for small words in the middle.
+        First and last words are always capitalized regardless of length.
+        """
+        # List of words that should not be capitalized when in the middle
+        small_words = {
+            "a",
+            "an",
+            "the",
+            "and",
+            "but",
+            "or",
+            "nor",
+            "for",
+            "so",
+            "yet",
+            "at",
+            "by",
+            "from",
+            "in",
+            "of",
+            "on",
+            "to",
+            "with",
+            "as",
+        }
+
+        # First convert entire string to title case
+        result = name.title()
+
+        # Split into words
+        words = result.split()
+
+        # Keep first and last words capitalized, lowercase small words in the middle
+        for i in range(1, len(words) - 1):
+            if words[i].lower() in small_words:
+                words[i] = words[i].lower()
+
+        # Rejoin with spaces
+        return " ".join(words)
+
+    def _check_title_case(self, name):
+        """Check if name follows proper title case rules."""
+        return name == self._proper_title_case(name)
