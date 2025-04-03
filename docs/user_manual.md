@@ -134,8 +134,6 @@ The EVS interface consists of four tabs representing the validation workflow:
 
 ### Setup Tab
 
-![1743639207778](image/user_manual/1743639207778.png)
-
 The Setup tab is your starting point, where you configure the validation process:
 
 #### File Selection
@@ -147,9 +145,26 @@ The Setup tab is your starting point, where you configure the validation process
 
 - **Entity Column**: Select which column contains the entity names to validate.
 - **Matching Threshold**: Adjust the slider to set the sensitivity of duplicate detection:
+
   - Higher values (closer to 100%) require closer matches
   - Lower values (closer to 50%) will find more potential duplicates but increase false positives
-- **Enable Advanced Matching**: Activates more sophisticated but computationally intensive matching algorithms.
+  - **Enable Advanced Matching**: Activates more sophisticated but computationally intensive matching algorithms.
+
+    When "Enable Advanced Matching" is NOT checked: The system uses a combination of:
+
+    1.**Levenshtein Distance**: Measures the minimum number of single-character edits (insertions, deletions, substitutions) required to change one string into another.
+
+    2.**Token-Based Matching**: Compares word tokens rather than character-by-character, useful for rearranged words.
+
+    3.**Soundex Matching**: Uses the Soundex algorithm to match words that sound similar.
+
+    4.**Metaphone Matching**: Another phonetic matching algorithm that is more accurate than Soundex for many cases.
+
+    When "Enable Advanced Matching" IS checked: The system uses all the methods above plus:
+
+    5.**Machine Learning-Based Matching**: Uses neural network embeddings to capture semantic similarity.
+    The ML-based matching relies on TensorFlow and specifically uses a Universal Sentence Encoder model that creates vector embeddings to measure semantic
+    similarity between entity names. This more sophisticated approach can detect matches that the other methods might miss, but is more computationally intensive.
 
 #### Starting Validation
 
@@ -160,8 +175,6 @@ The Setup tab is your starting point, where you configure the validation process
 The system will first process naming conventions and then move to the Validation tab automatically.
 
 ### Validation Tab
-
-![1743639306264](image/user_manual/1743639306264.png)
 
 The Validation tab displays naming convention violations and allows you to review and resolve them:
 
@@ -200,8 +213,6 @@ For each violation, you can:
 After reviewing naming conventions, you'll be prompted to continue to duplicate detection.
 
 ### Duplicates Tab
-
-![1743640084673](image/user_manual/1743640084673.png)
 
 The Duplicates tab has two sub-tabs:
 
@@ -256,8 +267,6 @@ After reviewing both internal and external duplicates:
 2. Click "Continue to Reports" to proceed to report generation
 
 ### Reports Tab
-
-![1743640378644](image/user_manual/1743640378644.png)
 
 The Reports tab allows you to generate comprehensive reports of the validation process:
 

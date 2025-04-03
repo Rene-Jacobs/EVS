@@ -7,7 +7,7 @@
 reports/*
 evs_venv/*
 data/*
-docs/images/*
+#docs/images/*
 logs/*
 __pycache__/*
 src/__pycache__/*
