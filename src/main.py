@@ -372,6 +372,10 @@ class MainWindow(QMainWindow):
         self.validation_frame.validation_status_changed.connect(
             self.on_validation_status_changed
         )
+        self.validation_frame.proceed_to_duplicates.connect(
+            self.start_duplicate_detection
+        )
+
         self.tab_widget.addTab(self.validation_frame, "Validation")
 
         # Duplicate tab
@@ -508,18 +512,6 @@ class MainWindow(QMainWindow):
                 "Naming convention validation is complete. You can now proceed to duplicate detection.",
             )
 
-            # Prompt to move to duplicate detection
-            reply = QMessageBox.question(
-                self,
-                "Continue to Duplicate Detection",
-                "Would you like to proceed to duplicate detection?",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.Yes,
-            )
-
-            if reply == QMessageBox.Yes:
-                self.logger.info("User chose to proceed to duplicate detection")
-                self.start_duplicate_detection()
         else:
             self.logger.warning("Validation failed or canceled")
             self.status_bar.showMessage("Validation failed or canceled.")

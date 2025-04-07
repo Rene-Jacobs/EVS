@@ -101,6 +101,7 @@ class ValidationFrame(QWidget):
 
     # Signals
     validation_status_changed = pyqtSignal(bool)  # True if validation complete
+    proceed_to_duplicates = pyqtSignal()
 
     def __init__(self, parent=None):
         """Initialize the validation frame."""
@@ -174,8 +175,14 @@ class ValidationFrame(QWidget):
         self.reject_all_btn.setEnabled(False)
         self.reject_all_btn.clicked.connect(self.reject_all_suggestions)
         action_layout.addWidget(self.reject_all_btn)
-
         results_layout.addLayout(action_layout)
+
+        proceed_layout = QHBoxLayout()
+        self.proceed_to_duplicates_btn = QPushButton("Proceed to Duplicate Detection")
+        self.proceed_to_duplicates_btn.setEnabled(False)
+        self.proceed_to_duplicates_btn.clicked.connect(self.on_proceed_to_duplicates)
+        proceed_layout.addWidget(self.proceed_to_duplicates_btn)
+        results_layout.addLayout(proceed_layout)
 
         main_layout.addWidget(results_group)
 
@@ -306,6 +313,7 @@ class ValidationFrame(QWidget):
             self.accept_all_btn.setEnabled(True)
             self.reject_all_btn.setEnabled(True)
             self.apply_changes_btn.setEnabled(True)
+            self.proceed_to_duplicates_btn.setEnabled(True)
 
         # Signal that validation is complete
         self.validation_status_changed.emit(True)
@@ -487,6 +495,10 @@ class ValidationFrame(QWidget):
             f"{len(decisions)} validation decisions have been applied.",
         )
 
+    def on_proceed_to_duplicates(self):
+        """Handle click on Proceed to Duplicate Detection button."""
+        self.proceed_to_duplicates.emit()
+
     def reset_ui(self):
         """Reset the UI to its initial state."""
         self.validation_results = []
@@ -503,6 +515,7 @@ class ValidationFrame(QWidget):
         self.accept_all_btn.setEnabled(False)
         self.reject_all_btn.setEnabled(False)
         self.apply_changes_btn.setEnabled(False)
+        self.proceed_to_duplicates_btn.setEnabled(False)
 
         self.validation_status_changed.emit(False)
 
