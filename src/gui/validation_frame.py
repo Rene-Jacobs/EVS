@@ -141,25 +141,29 @@ class ValidationFrame(QWidget):
         results_group = QGroupBox("Naming Convention Violations")
         results_layout = QVBoxLayout(results_group)
 
-        # Table for validation results
+        # Set up table
         self.results_table = QTableWidget()
         self.results_table.setColumnCount(5)
         self.results_table.setHorizontalHeaderLabels(
             ["Entity", "Violations", "Suggestion", "Action", "Status"]
         )
-        self.results_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        # Set all columns to be interactive (manually resizable)
         self.results_table.horizontalHeader().setSectionResizeMode(
-            0, QHeaderView.ResizeToContents
+            QHeaderView.Interactive
         )
-        self.results_table.horizontalHeader().setSectionResizeMode(
-            1, QHeaderView.ResizeToContents
-        )
-        self.results_table.horizontalHeader().setSectionResizeMode(
-            2, QHeaderView.ResizeToContents
-        )
-        self.results_table.horizontalHeader().setSectionResizeMode(
-            3, QHeaderView.ResizeToContents
-        )
+
+        # Set default widths that make sense as a starting point
+        self.results_table.setColumnWidth(0, 200)  # Entity
+        self.results_table.setColumnWidth(1, 250)  # Violations
+        self.results_table.setColumnWidth(2, 200)  # Suggestion
+        self.results_table.setColumnWidth(3, 100)  # Action
+        self.results_table.setColumnWidth(4, 100)  # Status
+
+        # Make the Action column fixed width since it contains combo boxes
+        self.results_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Fixed)
+
+        # Enable alternating row colors for better readability
         self.results_table.setAlternatingRowColors(True)
         results_layout.addWidget(self.results_table)
 
