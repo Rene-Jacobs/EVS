@@ -1,5 +1,9 @@
 entity_validation_system/
 │
+├── assets/
+│   └── icons
+│       └── app_icon.ico
+│
 ├── src/
 │   ├── __init__.py
 │   ├── main.py
@@ -16,21 +20,11 @@ entity_validation_system/
 │       ├── __init__.py
 │       └── interface.py
 │
-├── tests/
-│   ├── __init__.py
-│   ├── test_naming_convention.py
-│   ├── test_duplicate_detection.py
-│   └── test_report_generation.py
-│
 ├── data/
 │   └── AuthoritativeEntityList.csv
 │
 ├── docs/
-│   ├── user_manual.md
-│   └── developer_guide.md
-│
-├── config/
-│   └── validation_rules.yaml
+│   └── user_manual.md
 │
 ├── requirements.txt
 └── README.md
