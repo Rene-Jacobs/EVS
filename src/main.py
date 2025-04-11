@@ -36,8 +36,47 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QSettings, QSize, QPoint
 from PyQt5.QtGui import QIcon, QFont
 
-# Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Fix imports for PyInstaller bundle
+if getattr(sys, "frozen", False):
+    # Running in PyInstaller bundle
+    base_dir = sys._MEIPASS
+    # Add the base directory to the path
+    if base_dir not in sys.path:
+        sys.path.insert(0, base_dir)
+    # Add the src directory to the path
+    src_dir = os.path.join(base_dir, "src")
+    if os.path.exists(src_dir) and src_dir not in sys.path:
+        sys.path.insert(0, src_dir)
+
+# Handle paths in both frozen and non-frozen environments
+if getattr(sys, "frozen", False):
+    # Running from PyInstaller bundle
+    base_dir = sys._MEIPASS
+    exe_dir = os.path.dirname(sys.executable)
+
+    # Set up data, logs, and reports directories
+    data_dir = os.path.join(base_dir, "data")
+    logs_dir = os.path.join(exe_dir, "logs")
+    reports_dir = os.path.join(exe_dir, "reports")
+
+    # Create directories if they don't exist
+    os.makedirs(logs_dir, exist_ok=True)
+    os.makedirs(reports_dir, exist_ok=True)
+else:
+    # Running in normal Python environment
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_dir = os.path.join(base_dir, "data")
+    logs_dir = os.path.join(base_dir, "logs")
+    reports_dir = os.path.join(base_dir, "reports")
+
+# Make paths available to the application
+os.environ["EVS_BASE_DIR"] = base_dir
+os.environ["EVS_DATA_DIR"] = data_dir
+os.environ["EVS_LOGS_DIR"] = logs_dir
+os.environ["EVS_REPORTS_DIR"] = reports_dir
+
+# Add to path to help with imports
+sys.path.insert(0, base_dir)
 
 # Import GUI frames
 from gui.validation_frame import ValidationFrame
@@ -111,11 +150,16 @@ class SetupFrame(QWidget):
         self.load_default_settings()
 
         # Find default AuthoritativeEntityList.csv
-        self.default_auth_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "data",
-            "AuthoritativeEntityList.csv",
-        )
+        try:
+            import path_fix
+
+            self.default_auth_path = path_fix.get_authoritative_list_path()
+        except ImportError:
+            self.default_auth_path = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                "data",
+                "AuthoritativeEntityList.csv",
+            )
 
         self.setup_ui()
 

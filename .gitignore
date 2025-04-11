@@ -2,8 +2,15 @@
 .csv
 .log
 .pyc
+evs.spec
+evs_fixed.spec
+path_fix.py
+fix_imports.py
+runtime_hook.py
+evs_installer.iss
+build.py
 
-# ignore all files in the venv directory
+# ignore all files in the directory
 reports/*
 evs_venv/*
 data/*
@@ -13,5 +20,7 @@ src/__pycache__/*
 src/gui/__pycache__/*
 src/utils/__pycache__/*
 src/validation/__pycache__/*
-
+build/*
+installer/*
 .vscode/*
+dist/*
