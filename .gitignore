@@ -4,9 +4,7 @@
 .pyc
 evs.spec
 evs_fixed.spec
-path_fix.py
-fix_imports.py
-runtime_hook.py
+
 evs_installer.iss
 build.py
 
